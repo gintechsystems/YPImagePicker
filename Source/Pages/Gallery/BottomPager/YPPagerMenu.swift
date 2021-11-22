@@ -69,7 +69,8 @@ final class YPPagerMenu: UIView {
         if (gradientLayer == nil) {
             gradientLayer = CAGradientLayer()
             gradientLayer.colors = YPImagePickerConfiguration.shared.colors.gradientColor.map({ $0.cgColor })
-            gradientLayer.locations = [0.0, 1.0]
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
+            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
             gradientLayer.frame = self.bounds
 
             layer.insertSublayer(gradientLayer, at: 0)

@@ -62,7 +62,7 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         coverThumbSelectorView.thumbBorderColor = YPConfig.colors.coverSelectorBorderColor
         
         if (UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20) {
-            coverBottomHeightConstraint.constant = 30 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
+            coverBottomHeightConstraint.constant = 44 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
         }
         else {
             coverBottomHeightConstraint.constant = 44
@@ -277,7 +277,8 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         if (gradientLayer == nil) {
             gradientLayer = CAGradientLayer()
             gradientLayer.colors = YPConfig.colors.gradientColor.map({ $0.cgColor })
-            gradientLayer.locations = [0.0, 1.0]
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
+            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
             gradientLayer.frame = menuItemsView.bounds
 
             menuItemsView.layer.insertSublayer(gradientLayer, at: 0)

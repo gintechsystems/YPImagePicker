@@ -33,7 +33,7 @@ final class YPBottomPagerView: UIView {
         header.bottom(0)
         
         if (UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20) {
-            header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 30 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
+            header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 44 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
         }
         else {
             header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 44
