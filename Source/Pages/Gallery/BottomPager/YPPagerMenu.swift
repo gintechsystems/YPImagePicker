@@ -14,6 +14,8 @@ final class YPPagerMenu: UIView {
     var didSetConstraints = false
     var menuItems = [YPMenuItem]()
     
+    private var gradientLayer: CAGradientLayer!
+    
     convenience init() {
         self.init(frame: .zero)
         backgroundColor = .offWhiteOrBlack
@@ -50,8 +52,27 @@ final class YPPagerMenu: UIView {
         didSetConstraints = true
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if (YPImagePickerConfiguration.shared.colors.gradientColor.count > 1) {
+            setGradientBackground()
+        }
+    }
+    
     func refreshMenuItems() {
         didSetConstraints = false
         updateConstraints()
+    }
+    
+    private func setGradientBackground() {
+        if (gradientLayer == nil) {
+            gradientLayer = CAGradientLayer()
+            gradientLayer.colors = YPImagePickerConfiguration.shared.colors.gradientColor.map({ $0.cgColor })
+            gradientLayer.locations = [0.0, 1.0]
+            gradientLayer.frame = self.bounds
+
+            layer.insertSublayer(gradientLayer, at: 0)
+        }
     }
 }

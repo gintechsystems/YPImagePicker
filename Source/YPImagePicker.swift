@@ -74,6 +74,13 @@ open class YPImagePicker: UINavigationController {
         viewControllers = [picker]
         setupLoadingView()
         navigationBar.isTranslucent = false
+        
+        if #available(iOS 15.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithOpaqueBackground()
+            
+            navigationBar.scrollEdgeAppearance = navBarAppearance
+        }
 
         picker.didSelectItems = { [weak self] items in
             // Use Fade transition instead of default push animation

@@ -15,6 +15,10 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     @IBOutlet weak var trimBottomItem: YPMenuItem!
     @IBOutlet weak var coverBottomItem: YPMenuItem!
     
+    @IBOutlet weak var menuItemsView: UIView!
+    
+    @IBOutlet weak var coverBottomHeightConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var videoView: YPVideoView!
     @IBOutlet weak var trimmerView: TrimmerView!
     
@@ -27,6 +31,8 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     private var playbackTimeCheckerTimer: Timer?
     private var imageGenerator: AVAssetImageGenerator?
     private var isFromSelectionVC = false
+    
+    private var gradientLayer: CAGradientLayer!
     
     var didSave: ((YPMediaItem) -> Void)?
     var didCancel: (() -> Void)?
@@ -54,6 +60,13 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         trimmerView.minDuration = YPConfig.video.trimmerMinDuration
         
         coverThumbSelectorView.thumbBorderColor = YPConfig.colors.coverSelectorBorderColor
+        
+        if (UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20) {
+            coverBottomHeightConstraint.constant = 30 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
+        }
+        else {
+            coverBottomHeightConstraint.constant = 44
+        }
         
         trimBottomItem.textLabel.text = YPConfig.wordings.trim
         coverBottomItem.textLabel.text = YPConfig.wordings.cover
@@ -84,6 +97,14 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             navigationItem.leftBarButtonItem?.setFont(font: YPConfig.fonts.leftBarButtonFont, forState: .normal)
         }
         setupRightBarButtonItem()
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if (YPConfig.colors.gradientColor.count > 1) {
+            setGradientBackground()
+        }
     }
     
     override public func viewDidAppear(_ animated: Bool) {
@@ -249,6 +270,17 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                                   toleranceBefore: CMTime.zero,
                                   toleranceAfter: CMTime.zero)
             trimmerView.seek(to: startTime)
+        }
+    }
+    
+    private func setGradientBackground() {
+        if (gradientLayer == nil) {
+            gradientLayer = CAGradientLayer()
+            gradientLayer.colors = YPConfig.colors.gradientColor.map({ $0.cgColor })
+            gradientLayer.locations = [0.0, 1.0]
+            gradientLayer.frame = menuItemsView.bounds
+
+            menuItemsView.layer.insertSublayer(gradientLayer, at: 0)
         }
     }
 }
