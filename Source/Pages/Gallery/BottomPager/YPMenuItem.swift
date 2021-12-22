@@ -33,14 +33,14 @@ final class YPMenuItem: UIView {
         backgroundColor = YPImagePickerConfiguration.shared.colors.bottomMenuItemBackgroundColor
         
         if (YPImagePickerConfiguration.shared.bottomMenuItemUnderline) {
-            sv(
+            subviews(
                 textLabel,
                 button,
                 underline
             )
         }
         else {
-            sv(
+            subviews(
                 textLabel,
                 button
             )

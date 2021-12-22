@@ -61,6 +61,25 @@ class YPCropVC: UIViewController {
         saveButton.setFont(font: YPConfig.fonts.rightBarButtonFont, forState: .normal)
         saveButton.tintColor = .ypLabel
         v.toolbar.items = [cancelButton, flexibleSpace, saveButton]
+        
+        if #available(iOS 13.0, *) {
+            let toolbarAppearance = UIToolbarAppearance()
+            
+            if (YPImagePickerConfiguration.shared.colors.gradientColor.count < 1) {
+                toolbarAppearance.configureWithOpaqueBackground()
+            }
+            else {
+                let height = UIApplication.shared.keyWindow?.windowScene?.statusBarManager?.statusBarFrame.height ?? 44
+                
+                toolbarAppearance.backgroundImage = UIImage().gradient(size: CGSize(width: UIScreen.main.bounds.size.width, height: height), colors: YPImagePickerConfiguration.shared.colors.gradientColor)
+            }
+            
+            v.toolbar.standardAppearance = toolbarAppearance
+            
+            if #available(iOS 15.0, *) {
+                v.toolbar.scrollEdgeAppearance = toolbarAppearance
+            }
+        }
     }
     
     func setupGestureRecognizers() {
@@ -157,10 +176,8 @@ extension YPCropVC: UIGestureRecognizerDelegate {
     }
     
     func generateHapticFeedback() {
-        if #available(iOS 10.0, *) {
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
-        }
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
     }
     
     // MARK: - Pan Gesture

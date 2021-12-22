@@ -37,7 +37,6 @@ open class YPImagePicker: UINavigationController {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen // Force .fullScreen as iOS 13 now shows modals as cards by default.
         picker.pickerVCDelegate = self
-        navigationBar.tintColor = .ypLabel
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -74,15 +73,23 @@ open class YPImagePicker: UINavigationController {
         viewControllers = [picker]
         setupLoadingView()
         navigationBar.isTranslucent = false
+        navigationBar.tintColor = .ypLabel
+        view.backgroundColor = .ypSystemBackground
         
-        if #available(iOS 15.0, *) {
+        if #available(iOS 13.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            
             if (YPImagePickerConfiguration.shared.colors.gradientColor.count < 1) {
-                let navBarAppearance = UINavigationBarAppearance()
                 navBarAppearance.configureWithOpaqueBackground()
-                
-                navigationBar.standardAppearance = navBarAppearance
-                navigationBar.scrollEdgeAppearance = navBarAppearance
             }
+            else {
+                let height = UIApplication.shared.keyWindow?.windowScene?.statusBarManager?.statusBarFrame.height ?? 44
+                
+                navBarAppearance.backgroundImage = UIImage().gradient(size: CGSize(width: UIScreen.main.bounds.size.width, height: height), colors: YPImagePickerConfiguration.shared.colors.gradientColor)
+            }
+            
+            navigationBar.standardAppearance = navBarAppearance
+            navigationBar.scrollEdgeAppearance = navBarAppearance
         }
 
         picker.didSelectItems = { [weak self] items in
@@ -170,7 +177,7 @@ open class YPImagePicker: UINavigationController {
     }
     
     private func setupLoadingView() {
-        view.sv(
+        view.subviews(
             loadingView
         )
         loadingView.fillContainer()
