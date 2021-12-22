@@ -76,10 +76,13 @@ open class YPImagePicker: UINavigationController {
         navigationBar.isTranslucent = false
         
         if #available(iOS 15.0, *) {
-            let navBarAppearance = UINavigationBarAppearance()
-            navBarAppearance.configureWithOpaqueBackground()
-            
-            navigationBar.scrollEdgeAppearance = navBarAppearance
+            if (YPImagePickerConfiguration.shared.colors.gradientColor.count < 1) {
+                let navBarAppearance = UINavigationBarAppearance()
+                navBarAppearance.configureWithOpaqueBackground()
+                
+                navigationBar.standardAppearance = navBarAppearance
+                navigationBar.scrollEdgeAppearance = navBarAppearance
+            }
         }
 
         picker.didSelectItems = { [weak self] items in

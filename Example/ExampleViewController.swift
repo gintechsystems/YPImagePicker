@@ -12,6 +12,10 @@ import AVKit
 import Photos
 
 class ExampleViewController: UIViewController {
+    let backgroundColor = UIColor(red: 0xFF/255, green: 0xC8/255, blue: 0x00/255, alpha: 255) // #FFC800
+
+    let yellowColors = [UIColor(red: 0xFF/255, green: 0xDD/255, blue: 0x00/255, alpha: 255), UIColor(red: 0xFB/255, green: 0xB0/255, blue: 0x34/255, alpha: 255)] // #FFDD00, #FBB034
+    
     var selectedItems = [YPMediaItem]()
 
     lazy var selectedImageV : UIImageView = {
@@ -193,6 +197,8 @@ class ExampleViewController: UIViewController {
 		//config.fonts.rightBarButtonFont = UIFont.systemFont(ofSize: 22.0, weight: .bold)
 		//config.fonts.navigationBarTitleFont = UIFont.systemFont(ofSize: 22.0, weight: .heavy)
 		//config.fonts.leftBarButtonFont = UIFont.systemFont(ofSize: 22.0, weight: .heavy)
+        
+        //config.colors.gradientColor = yellowColors
 
         let picker = YPImagePicker(configuration: config)
 

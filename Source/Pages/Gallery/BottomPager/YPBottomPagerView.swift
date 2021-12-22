@@ -32,15 +32,19 @@ final class YPBottomPagerView: UIView {
         
         header.bottom(0)
         
-        if (UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20) {
-            header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 44 + UIApplication.shared.delegate!.window!!.safeAreaInsets.bottom
+        clipsToBounds = false
+        setupScrollView()
+    }
+    
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        
+        if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
+            header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 44 + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         }
         else {
             header.heightConstraint?.constant = (YPConfig.hidesBottomBar || (YPConfig.screens.count == 1)) ? 0 : 44
         }
-        
-        clipsToBounds = false
-        setupScrollView()
     }
 
     private func setupScrollView() {
