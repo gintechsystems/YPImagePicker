@@ -146,6 +146,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             navigationItem.leftBarButtonItem?.setFont(font: YPConfig.fonts.leftBarButtonFont, forState: .normal)
         }
         setupRightBarButtonItem()
+        
+        navigationController?.navigationBar.tintColor = YPImagePickerConfiguration.shared.colors.navigationBarTintColor ?? .ypLabel
     }
 
     private func setupRightBarButtonItem() {
