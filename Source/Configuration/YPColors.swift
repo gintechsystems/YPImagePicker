@@ -22,6 +22,9 @@ public struct YPColors {
     /// Allows overriding the default navigation bar tint color if needed.
     public var navigationBarTintColor: UIColor?
     
+    /// Allows overriding the default navigation bar title color if needed.
+    public var navigationTitleColor: UIColor = .ypLabel
+    
     /// A color for circle for selected items in multiple selection
     /// Default is nil, which takes tintColor.
     public var multipleItemsSelectedCircleColor: UIColor?

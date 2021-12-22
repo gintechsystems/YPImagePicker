@@ -88,6 +88,8 @@ open class YPImagePicker: UINavigationController {
                 navBarAppearance.backgroundImage = UIImage().gradient(size: CGSize(width: UIScreen.main.bounds.size.width, height: height), colors: YPImagePickerConfiguration.shared.colors.gradientColor)
             }
             
+            navBarAppearance.titleTextAttributes = [.font: YPConfig.fonts.navigationBarTitleFont, .foregroundColor: YPConfig.colors.navigationTitleColor]
+            
             navigationBar.standardAppearance = navBarAppearance
             navigationBar.scrollEdgeAppearance = navBarAppearance
         }
@@ -147,6 +149,7 @@ open class YPImagePicker: UINavigationController {
                 if YPConfig.showsPhotoFilters {
                     let filterVC = YPPhotoFiltersVC(inputPhoto: photo,
                                                     isFromSelectionVC: false)
+                    
                     // Show filters and then crop
                     filterVC.didSave = { outputMedia in
                         if case let YPMediaItem.photo(outputPhoto) = outputMedia {

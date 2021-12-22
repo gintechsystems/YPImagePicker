@@ -10,9 +10,6 @@ import UIKit
 
 public struct YPFonts {
 
-    /// The font used in the picker title
-    public var pickerTitleFont: UIFont = .boldSystemFont(ofSize: 17)
-
     /// The font used in the warning label of the LibraryView
     public var libaryWarningFont: UIFont = UIFont(name: "Helvetica Neue", size: 14)!
 

@@ -205,27 +205,26 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         
         vc.didSelectAlbum = { [weak self] album in
             self?.libraryVC?.setAlbum(album)
-            self?.setTitleViewWithTitle(aTitle: album.title)
             navVC.dismiss(animated: true, completion: nil)
         }
         present(navVC, animated: true, completion: nil)
     }
     
-    func setTitleViewWithTitle(aTitle: String) {
+    func setTitleViewWithTitle(aTitle: String, minimal: Bool = false) {
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 200, height: 40)
         
         let label = UILabel()
         label.text = aTitle
         // Use YPConfig font
-        label.font = YPConfig.fonts.pickerTitleFont
+        label.font = YPConfig.fonts.navigationBarTitleFont
 
         // Use custom textColor if set by user.
         if let navBarTitleColor = UINavigationBar.appearance().titleTextAttributes?[.foregroundColor] as? UIColor {
             label.textColor = navBarTitleColor
         }
         
-        if YPConfig.library.options != nil {
+        if YPConfig.library.options != nil || minimal {
             titleView.subviews(
                 label
             )
@@ -273,7 +272,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         }
         switch mode {
         case .library:
-            setTitleViewWithTitle(aTitle: libraryVC?.title ?? "")
+            setTitleViewWithTitle(aTitle: libraryVC?.title ?? YPConfig.wordings.libraryTitle)
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
                                                                 style: .done,
                                                                 target: self,
@@ -285,12 +284,10 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
 
         case .camera:
-            navigationItem.titleView = nil
-            title = cameraVC?.title
+            setTitleViewWithTitle(aTitle: cameraVC?.title ?? YPConfig.wordings.cameraTitle, minimal: true)
             navigationItem.rightBarButtonItem = nil
         case .video:
-            navigationItem.titleView = nil
-            title = videoVC?.title
+            setTitleViewWithTitle(aTitle: videoVC?.title ?? YPConfig.wordings.videoTitle, minimal: true)
             navigationItem.rightBarButtonItem = nil
         }
 
