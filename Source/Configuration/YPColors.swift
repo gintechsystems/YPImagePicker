@@ -49,6 +49,9 @@ public struct YPColors {
 
     /// A color for for bottom buttons not selected text.
     public var bottomMenuItemUnselectedTextColor: UIColor = .ypSecondaryLabel
+    
+    /// Underline color for each menu item.
+    public var bottomMenuItemUnderlineColor :UIColor = .black
 
     /// The color of the crop overlay.
     public var cropOverlayColor: UIColor = .ypSystemBackground.withAlphaComponent(0.4)
