@@ -73,7 +73,7 @@ open class YPImagePicker: UINavigationController {
         viewControllers = [picker]
         setupLoadingView()
         navigationBar.isTranslucent = false
-        navigationBar.tintColor = .ypLabel
+        navigationBar.tintColor = YPImagePickerConfiguration.shared.colors.navigationBarTintColor ?? .ypLabel
         view.backgroundColor = .ypSystemBackground
         
         if #available(iOS 13.0, *) {

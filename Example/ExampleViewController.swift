@@ -190,7 +190,6 @@ class ExampleViewController: UIViewController {
 
         config.library.preselectedItems = selectedItems
 
-
 		// Customise fonts
 		//config.fonts.menuItemFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
 		//config.fonts.pickerTitleFont = UIFont.systemFont(ofSize: 22.0, weight: .black)
