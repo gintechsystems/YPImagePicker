@@ -36,7 +36,7 @@ final class YPMenuItem: UIView {
             button
         )
         
-        if (UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20) {
+        if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
             textLabel.centerHorizontally()
             textLabel.top(10)
         }
