@@ -58,14 +58,6 @@ final class YPMenuItem: UIView {
             button.fillContainer()
         }
         
-        if (YPImagePickerConfiguration.shared.bottomMenuItemUnderline) {
-            underline.backgroundColor = .clear
-            underline.fillHorizontally(padding: 30)
-            underline.height(2)
-            
-            underline.Top == button.Bottom + 10
-        }
-        
         |-(10)-textLabel-(10)-|
         
         textLabel.style { l in
@@ -75,6 +67,26 @@ final class YPMenuItem: UIView {
             l.adjustsFontSizeToFitWidth = true
             l.numberOfLines = 2
         }
+        
+        if (YPImagePickerConfiguration.shared.bottomMenuItemUnderline) {
+            // Since we don't know the text yet we can't calculate the width until the item is added later.
+            underline.backgroundColor = .clear
+            underline.height(2)
+            
+            if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
+                underline.Top == button.Bottom
+            }
+            else {
+                underline.Top == button.Bottom - 8
+            }
+        }
+    }
+    
+    func sizeUnderline() {
+        let textSize = textLabel.text!.boundingRect(with: textLabel.bounds.size, options: .usesLineFragmentOrigin, attributes: [.font : textLabel.font!], context: nil)
+        
+        underline.width(ceil(textSize.width) + 10)
+        underline.centerHorizontally()
     }
 
     func select() {

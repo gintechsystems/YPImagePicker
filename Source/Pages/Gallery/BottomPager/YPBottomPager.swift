@@ -74,6 +74,7 @@ open class YPBottomPager: UIViewController, UIScrollViewDelegate {
             menuItem.button.addTarget(self,
                                       action: #selector(tabTapped(_:)),
                                       for: .touchUpInside)
+            menuItem.sizeUnderline()
             v.header.menuItems.append(menuItem)
         }
         

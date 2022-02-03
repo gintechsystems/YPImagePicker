@@ -199,6 +199,8 @@ class ExampleViewController: UIViewController {
         //config.colors.gradientColor = yellowColors
         
         //config.colors.navigationBarTintColor = .blue
+        
+        //config.bottomMenuItemUnderline = true
 
         let picker = YPImagePicker(configuration: config)
 
