@@ -74,7 +74,7 @@ final class YPMenuItem: UIView {
             underline.height(2)
             
             if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
-                underline.Top == button.Bottom
+                underline.Top == button.Bottom + 8
             }
             else {
                 underline.Top == button.Bottom - 8
