@@ -30,6 +30,8 @@ final class YPAssetViewContainer: UIView {
     private let spinner = UIActivityIndicatorView(style: .white)
     private var shouldCropToSquare = YPConfig.library.isSquareByDefault
     private var isMultipleSelection = false
+    
+    private let hideCropButton = YPConfig.library.hideCropButton
 
     public var itemOverlayType = YPConfig.library.itemOverlayType
 
@@ -78,7 +80,7 @@ final class YPAssetViewContainer: UIView {
         curtain.backgroundColor = UIColor.ypLabel.withAlphaComponent(0.7)
         curtain.alpha = 0
 
-        if !onlySquare {
+        if !onlySquare && !hideCropButton {
             // Crop Button
             squareCropButton.setImage(YPConfig.icons.cropIcon, for: .normal)
             subviews(squareCropButton)
@@ -110,7 +112,7 @@ final class YPAssetViewContainer: UIView {
     }
     
     public func refreshSquareCropButton() {
-        if onlySquare {
+        if onlySquare || hideCropButton {
             squareCropButton.isHidden = true
         } else {
             if let image = zoomableView.assetImageView.image {
