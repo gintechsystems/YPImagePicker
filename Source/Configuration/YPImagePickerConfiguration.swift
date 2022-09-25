@@ -236,6 +236,9 @@ public struct YPConfigLibrary {
     
     /// Set the overlay type shown on top of the selected library item
     public var itemOverlayType: YPItemOverlayType = .grid
+    
+    /// Sets the max zooming on a single photo or video
+    public var maxZoomFactor = 6.0
 }
 
 /// Encapsulates video specific settings.
