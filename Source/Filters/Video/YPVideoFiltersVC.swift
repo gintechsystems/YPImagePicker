@@ -54,17 +54,13 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         v.isHidden = true
         return v
     }()
-    private let bottomItemsView: UIView = {
-        let v = UIView()
-        return v
-    }()
-    private let trimBottomItem: YPMenuItem = {
+    private lazy var trimBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.trim
         v.button.addTarget(self, action: #selector(selectTrim), for: .touchUpInside)
         return v
     }()
-    private let coverBottomItem: YPMenuItem = {
+    private lazy var coverBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.cover
         v.button.addTarget(self, action: #selector(selectCover), for: .touchUpInside)
@@ -80,8 +76,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         v.isHidden = true
         return v
     }()
-    
-    private var gradientLayer :CAGradientLayer!
 
     // MARK: - Live cycle
 
@@ -99,22 +93,14 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             .addObserver(self,
                          selector: #selector(itemDidFinishPlaying(_:)),
                          name: .AVPlayerItemDidPlayToEndTime,
-                         object: nil)
+                         object: videoView.player.currentItem)
         
         // Set initial video cover
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
         imageGenerator?.appliesPreferredTrackTransform = true
         didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
     }
-    
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        if (YPConfig.colors.gradientColor.count > 1) {
-            setGradientBackground()
-        }
-    }
-    
+
     override public func viewDidAppear(_ animated: Bool) {
         trimmerView.asset = inputAsset
         trimmerView.delegate = self
@@ -124,7 +110,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         
         selectTrim()
         videoView.loadVideo(inputVideo)
-
+        videoView.showPlayImage(show: true)
+        startPlaybackTimeChecker()
+        
         super.viewDidAppear(animated)
     }
     
@@ -146,8 +134,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             navigationItem.leftBarButtonItem?.setFont(font: YPConfig.fonts.leftBarButtonFont, forState: .normal)
         }
         setupRightBarButtonItem()
-        
-        navigationController?.navigationBar.tintColor = YPImagePickerConfiguration.shared.colors.navigationBarTintColor ?? .ypLabel
     }
 
     private func setupRightBarButtonItem() {
@@ -162,10 +148,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     private func setupLayout() {
         view.subviews(
-            bottomItemsView.subviews(
-                trimBottomItem,
-                coverBottomItem
-            ),
+            trimBottomItem,
+            coverBottomItem,
             videoView,
             coverImageView,
             trimmerContainerView.subviews(
@@ -173,13 +157,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                 coverThumbSelectorView
             )
         )
-        
-        if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
-            bottomItemsView.height(44 + UIApplication.shared.keyWindow!.safeAreaInsets.bottom).fillHorizontally().bottom(0)
-        }
-        else {
-            bottomItemsView.height(60).fillHorizontally().bottom(0)
-        }
 
         trimBottomItem.leading(0).height(40)
         trimBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
@@ -229,8 +206,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                     DispatchQueue.main.async {
                         if let coverImage = self?.coverImageView.image {
                             let resultVideo = YPMediaVideo(thumbnail: coverImage,
-														   videoURL: destinationURL,
-														   asset: self?.inputVideo.asset)
+                                                           videoURL: destinationURL,
+                                                           asset: self?.inputVideo.asset)
                             didSave(YPMediaItem.video(v: resultVideo))
                             self?.setupRightBarButtonItem()
                         } else {
@@ -337,18 +314,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                                   toleranceBefore: CMTime.zero,
                                   toleranceAfter: CMTime.zero)
             trimmerView.seek(to: startTime)
-        }
-    }
-    
-    private func setGradientBackground() {
-        if (gradientLayer == nil) {
-            gradientLayer = CAGradientLayer()
-            gradientLayer.colors = YPConfig.colors.gradientColor.map({ $0.cgColor })
-            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
-            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
-            gradientLayer.frame = bottomItemsView.bounds
-
-            bottomItemsView.layer.insertSublayer(gradientLayer, at: 0)
         }
     }
 }
