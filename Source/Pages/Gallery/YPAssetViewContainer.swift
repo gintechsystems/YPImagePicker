@@ -29,7 +29,7 @@ final class YPAssetViewContainer: UIView {
     
     private let spinner = UIActivityIndicatorView(style: .medium)
     private var shouldCropToSquare = YPConfig.library.isSquareByDefault
-    private var isMultipleSelection = false
+    private var isMultipleSelectionEnabled = false
     
     private let hideCropButton = YPConfig.library.hideCropButton
 
@@ -56,8 +56,7 @@ final class YPAssetViewContainer: UIView {
             itemOverlay.alpha = 0
         }
 
-        let touchDownGR = UILongPressGestureRecognizer(target: self,
-                                                       action: #selector(handleTouchDown))
+        let touchDownGR = UILongPressGestureRecognizer(target: self, action: #selector(handleTouchDown))
         touchDownGR.minimumPressDuration = 0
         touchDownGR.delegate = self
         addGestureRecognizer(touchDownGR)
@@ -113,8 +112,10 @@ final class YPAssetViewContainer: UIView {
     public func updateSquareCropButtonState() {
         guard !isMultipleSelectionEnabled else {
             // If multiple selection enabled, the squareCropButton is not visible
-    
-    public func refreshSquareCropButton() {
+            squareCropButton.isHidden = false
+            return
+        }
+        
         if onlySquare || hideCropButton {
             squareCropButton.isHidden = true
             return
