@@ -46,7 +46,7 @@ final class YPMenuItem: UIView {
             )
         }
         
-        if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
+        if (UIWindow.current?.safeAreaInsets.top ?? 0 > 20) {
             textLabel.centerHorizontally()
             textLabel.top(10)
             
@@ -73,7 +73,7 @@ final class YPMenuItem: UIView {
             underline.backgroundColor = .clear
             underline.height(2)
             
-            if (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0 > 20) {
+            if (UIWindow.current?.safeAreaInsets.top ?? 0 > 20) {
                 underline.Top == button.Bottom + 8
             }
             else {

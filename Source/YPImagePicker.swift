@@ -83,7 +83,7 @@ open class YPImagePicker: UINavigationController {
                 navBarAppearance.configureWithOpaqueBackground()
             }
             else {
-                let height = UIApplication.shared.keyWindow?.windowScene?.statusBarManager?.statusBarFrame.height ?? 44
+                let height = UIWindow.current?.windowScene?.statusBarManager?.statusBarFrame.height ?? 44
                 
                 navBarAppearance.backgroundImage = UIImage().gradient(size: CGSize(width: UIScreen.main.bounds.size.width, height: height), colors: YPImagePickerConfiguration.shared.colors.gradientColor)
             }

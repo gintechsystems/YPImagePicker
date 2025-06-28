@@ -55,6 +55,8 @@
 		99CF6D2B201CB96700487F77 /* YPVideoCaptureHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CF6D2A201CB96700487F77 /* YPVideoCaptureHelper.swift */; };
 		99D1DC2B1F9788930047F0E0 /* YPImagePickerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D1DC2A1F9788930047F0E0 /* YPImagePickerConfiguration.swift */; };
 		AA69BCF222E601D100FBB925 /* YPDeviceOrientationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */; };
+		BB51684B2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
+		BB51684C2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
 		BBDFA743274B7EA9009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		BBDFA744274B7EAB009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		D3F58C043ACF12DCD1520762 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61DAE15125B4DA4E55DDE0B8 /* Pods_Example.framework */; };
@@ -88,7 +90,7 @@
 		EBA37B0B26F73080005DAAD4 /* YPAlbumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA37B0626F73080005DAAD4 /* YPAlbumCell.swift */; };
 		EBA37B0C26F73080005DAAD4 /* YPAlbumsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA37B0726F73080005DAAD4 /* YPAlbumsManager.swift */; };
 		EBA37B0D26F73080005DAAD4 /* YPAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA37B0826F73080005DAAD4 /* YPAlbumView.swift */; };
-		EBA37B3026F74228005DAAD4 /* BuildFile in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EBA37B3026F74228005DAAD4 /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EBA37B5226F749C6005DAAD4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA37B5126F749C6005DAAD4 /* AppDelegate.swift */; };
 		EBA37B5B26F749C7005DAAD4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBA37B5A26F749C7005DAAD4 /* Assets.xcassets */; };
 		EBA37B5E26F749C7005DAAD4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBA37B5C26F749C7005DAAD4 /* LaunchScreen.storyboard */; };
@@ -203,7 +205,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				EBA37B3026F74228005DAAD4 /* BuildFile in Embed Frameworks */,
+				EBA37B3026F74228005DAAD4 /* (null) in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,6 +284,7 @@
 		99D1DC2A1F9788930047F0E0 /* YPImagePickerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPImagePickerConfiguration.swift; sourceTree = "<group>"; };
 		A7FD716620755C2D0044A8E8 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPDeviceOrientationHelper.swift; sourceTree = "<group>"; };
+		BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Extensions.swift"; sourceTree = "<group>"; };
 		BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YPAccessibility.swift; sourceTree = "<group>"; };
 		C3F1C5F1794720312168BD74 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		D4FB1E0632AF3CD0D27DBC25 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -545,6 +548,7 @@
 				EB867BCE209134F100332A54 /* UIColor+Extensions.swift */,
 				9911FA23203C3A31000E9B06 /* UIImage+Extensions.swift */,
 				321E6D86240CFABC00D76CD8 /* UINavigationBar+Extensions.swift */,
+				BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */,
 				EB473E16208E192800D16105 /* URL+Extensions.swift */,
 				EBA37BC826F757FF005DAAD4 /* Bundle+Extensions.swift */,
 				EBDDF0EA278784A900A372FD /* Array+Extensions.swift */,
@@ -646,7 +650,6 @@
 				C3F1C5F1794720312168BD74 /* Pods-Example.debug.xcconfig */,
 				D4FB1E0632AF3CD0D27DBC25 /* Pods-Example.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -871,6 +874,7 @@
 				EBD2B641207B7D7400E711C2 /* YPMediaItem.swift in Sources */,
 				99D1DC2B1F9788930047F0E0 /* YPImagePickerConfiguration.swift in Sources */,
 				99B8C4C3208F8EE900127119 /* YPLoadingView.swift in Sources */,
+				BB51684C2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */,
 				EBA37AFB26F7300C005DAAD4 /* YPPermissionDeniedPopup.swift in Sources */,
 				990FD297201B4A5F002A39A1 /* PHCachingImageManager+Extensions.swift in Sources */,
 				99CF6D23201B71DC00487F77 /* YPLibrary+LibraryChange.swift in Sources */,
@@ -1025,6 +1029,7 @@
 				EBA37BA326F74CBA005DAAD4 /* YPAssetViewContainer.swift in Sources */,
 				EBA37B9D26F74CBA005DAAD4 /* YPImageSize.swift in Sources */,
 				EBA37B9926F74CBA005DAAD4 /* YPFlashMode.swift in Sources */,
+				BB51684B2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */,
 				EBA37BBD26F74CE0005DAAD4 /* YPFilterCollectionViewCell.swift in Sources */,
 				EBA37B8326F74CBA005DAAD4 /* CIImage+Extensions.swift in Sources */,
 				EBA37BAA26F74CBA005DAAD4 /* YPCameraVC.swift in Sources */,
