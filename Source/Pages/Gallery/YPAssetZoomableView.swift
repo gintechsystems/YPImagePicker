@@ -23,7 +23,7 @@ final class YPAssetZoomableView: UIScrollView {
     public var photoImageView = UIImageView()
     public var videoView = YPVideoView()
     public var squaredZoomScale: CGFloat = 1
-    public var minWidth: CGFloat? = YPConfig.library.minWidthForItem
+    public var minWidthForItem: CGFloat? = YPConfig.library.minWidthForItem
     
     fileprivate var currentAsset: PHAsset?
     
@@ -75,6 +75,8 @@ final class YPAssetZoomableView: UIScrollView {
             strongSelf.videoView.setPreviewImage(preview)
             
             strongSelf.setAssetFrame(for: strongSelf.videoView, with: preview)
+
+            strongSelf.squaredZoomScale = strongSelf.calculateSquaredZoomScale()
             
             completion()
             
@@ -131,6 +133,8 @@ final class YPAssetZoomableView: UIScrollView {
                 // add update CropInfo after multiple
                 updateCropInfo()
             }
+
+            strongSelf.squaredZoomScale = strongSelf.calculateSquaredZoomScale()
             
             completion(isLowResIntermediaryImage)
         }
@@ -198,7 +202,7 @@ fileprivate extension YPAssetZoomableView {
             view.frame.size.width = screenWidth * aspectRatio
             view.frame.size.height = screenWidth
             
-            if let minWidth = minWidth {
+            if let minWidth = minWidthForItem {
                 let k = minWidth / screenWidth
                 zoomScale = (h / w) * k
             }

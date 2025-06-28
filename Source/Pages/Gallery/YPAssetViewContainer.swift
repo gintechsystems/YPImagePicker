@@ -27,7 +27,7 @@ final class YPAssetViewContainer: UIView {
     public var isShown = true
     public var spinnerIsShown = false
     
-    private let spinner = UIActivityIndicatorView(style: .white)
+    private let spinner = UIActivityIndicatorView(style: .medium)
     private var shouldCropToSquare = YPConfig.library.isSquareByDefault
     private var isMultipleSelection = false
     
@@ -104,36 +104,44 @@ final class YPAssetViewContainer: UIView {
     // MARK: - Square button
 
     @objc public func squareCropButtonTapped() {
-//        if let zoomableView = zoomableView {
-            let z = zoomableView.zoomScale
-            shouldCropToSquare = (z >= 1 && z < zoomableView.squaredZoomScale)
-//        }
+        let z = zoomableView.zoomScale
+        shouldCropToSquare = (z >= 1 && z < zoomableView.squaredZoomScale)
         zoomableView.fitImage(shouldCropToSquare, animated: true)
     }
+
+    /// Update only UI of square crop button.
+    public func updateSquareCropButtonState() {
+        guard !isMultipleSelectionEnabled else {
+            // If multiple selection enabled, the squareCropButton is not visible
     
     public func refreshSquareCropButton() {
         if onlySquare || hideCropButton {
             squareCropButton.isHidden = true
-        } else {
-            if let image = zoomableView.assetImageView.image {
-                let isImageASquare = image.size.width == image.size.height
-                squareCropButton.isHidden = isImageASquare
-            }
+            return
         }
-        
-        let shouldFit = YPConfig.library.onlySquare ? true : shouldCropToSquare
-        zoomableView.fitImage(shouldFit)
-        zoomableView.layoutSubviews()
+        guard !onlySquare else {
+            // If only square enabled, than the squareCropButton is not visible
+            squareCropButton.isHidden = true
+            return
+        }
+        guard let selectedAssetImage = zoomableView.assetImageView.image else {
+            // If no selected asset, than the squareCropButton is not visible
+            squareCropButton.isHidden = true
+            return
+        }
+
+        let isImageASquare = selectedAssetImage.size.width == selectedAssetImage.size.height
+        squareCropButton.isHidden = isImageASquare
     }
     
     // MARK: - Multiple selection
 
     /// Use this to update the multiple selection mode UI state for the YPAssetViewContainer
     public func setMultipleSelectionMode(on: Bool) {
-        isMultipleSelection = on
+        isMultipleSelectionEnabled = on
         let image = on ? YPConfig.icons.multipleSelectionOnIcon : YPConfig.icons.multipleSelectionOffIcon
         multipleSelectionButton.setImage(image, for: .normal)
-        refreshSquareCropButton()
+        updateSquareCropButtonState()
     }
 }
 

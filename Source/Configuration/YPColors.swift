@@ -60,7 +60,10 @@ public struct YPColors {
     public var bottomMenuItemUnderlineColor :UIColor = .black
 
     /// The color of the crop overlay.
-    public var cropOverlayColor: UIColor = .ypSystemBackground.withAlphaComponent(0.4)
+    public var cropOverlayColor: UIColor = UIColor.ypSystemBackground.withAlphaComponent(0.4)
+
+    /// The default color of all navigation bars except album's.
+    public var defaultNavigationBarColor: UIColor = .offWhiteOrBlack
 
     // MARK: - Trimmer
     

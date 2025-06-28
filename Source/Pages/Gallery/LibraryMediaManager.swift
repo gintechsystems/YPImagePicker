@@ -13,7 +13,7 @@ class LibraryMediaManager {
     
     weak var v: YPLibraryView?
     var collection: PHAssetCollection?
-    internal var fetchResult: PHFetchResult<PHAsset>!
+    internal var fetchResult: PHFetchResult<PHAsset>?
     internal var previousPreheatRect: CGRect = .zero
     internal var imageManager: PHCachingImageManager?
     internal var exportTimer: Timer?
@@ -40,7 +40,9 @@ class LibraryMediaManager {
     
     func updateCachedAssets(in collectionView: UICollectionView) {
         let screenWidth = YPImagePickerConfiguration.screenWidth
-        let size = screenWidth / 4 * UIScreen.main.scale
+        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let scale = windowScene?.screen.scale ?? 1.0
+        let size = screenWidth / 4 * scale
         let cellSize = CGSize(width: size, height: size)
         
         var preheatRect = collectionView.bounds
@@ -60,8 +62,11 @@ class LibraryMediaManager {
                 addedIndexPaths += indexPaths
             })
             
-            let assetsToStartCaching = fetchResult.assetsAtIndexPaths(addedIndexPaths)
-            let assetsToStopCaching = fetchResult.assetsAtIndexPaths(removedIndexPaths)
+            guard let assetsToStartCaching = fetchResult?.assetsAtIndexPaths(addedIndexPaths),
+                  let assetsToStopCaching = fetchResult?.assetsAtIndexPaths(removedIndexPaths) else {
+                print("Some problems in fetching and caching assets.")
+                return
+            }
             
             imageManager?.startCachingImages(for: assetsToStartCaching,
                                              targetSize: cellSize,
@@ -214,5 +219,17 @@ class LibraryMediaManager {
         for s in self.currentExportSessions {
             s.cancelExport()
         }
+    }
+
+    func getAsset(at index: Int) -> PHAsset? {
+        guard let fetchResult = fetchResult else {
+            print("FetchResult not contain this index: \(index)")
+            return nil
+        }
+        guard fetchResult.count > index else {
+            print("FetchResult not contain this index: \(index)")
+            return nil
+        }
+        return fetchResult.object(at: index)
     }
 }
