@@ -237,6 +237,11 @@ public struct YPConfigVideo {
      */
     public var compression: String = AVAssetExportPresetHighestQuality
     
+    /// Skip video processing when no significant cropping is needed (within 1% tolerance).
+    /// This can dramatically improve performance for videos that don't require modification.
+    /// Defaults to true.
+    public var skipProcessingWhenPossible: Bool = true
+    
     /// Choose the result video extension if you trim or compress a video. Defaults to mov.
     public var fileType: AVFileType = .mov
     

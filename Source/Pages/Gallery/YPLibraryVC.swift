@@ -404,7 +404,23 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     private func fetchVideoAndApplySettings(for asset: PHAsset,
                                             withCropRect rect: CGRect? = nil,
                                             callback: @escaping (_ videoURL: URL?) -> Void) {
-        let normalizedCropRect = rect ?? DispatchQueue.main.sync { v.currentCropRect() }
+        // Calculate crop rect asynchronously if not provided
+        if let rect = rect {
+            performVideoProcessing(for: asset, withCropRect: rect, callback: callback)
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let cropRect = self.v.currentCropRect()
+                DispatchQueue.global(qos: .userInitiated).async {
+                    self.performVideoProcessing(for: asset, withCropRect: cropRect, callback: callback)
+                }
+            }
+        }
+    }
+    
+    private func performVideoProcessing(for asset: PHAsset,
+                                       withCropRect normalizedCropRect: CGRect,
+                                       callback: @escaping (_ videoURL: URL?) -> Void) {
         let ts = targetSize(for: asset, cropRect: normalizedCropRect)
         let xCrop: CGFloat = normalizedCropRect.origin.x * CGFloat(asset.pixelWidth)
         let yCrop: CGFloat = normalizedCropRect.origin.y * CGFloat(asset.pixelHeight)
@@ -423,7 +439,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                           duration: YPConfig.video.trimmerMaxDuration,
                                           callback: callback)
         } else {
-            delegate?.libraryViewDidTapNext()
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.libraryViewDidTapNext()
+            }
             mediaManager.fetchVideoUrlAndCrop(for: asset, cropRect: resultCropRect, callback: callback)
         }
     }

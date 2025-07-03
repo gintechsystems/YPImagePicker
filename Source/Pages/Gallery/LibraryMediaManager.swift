@@ -95,6 +95,42 @@ class LibraryMediaManager {
                                           cropRect: CGRect,
                                           duration: CMTime?,
                                           callback: @escaping (_ videoURL: URL?) -> Void) {
+        
+        // Check if cropping is actually needed (within 1% tolerance) and skip processing is enabled
+        if YPConfig.video.skipProcessingWhenPossible {
+            let tolerance: CGFloat = 0.01
+            let isFullFrame = abs(cropRect.origin.x) < tolerance && 
+                             abs(cropRect.origin.y) < tolerance &&
+                             abs(cropRect.size.width - CGFloat(videoAsset.pixelWidth)) < tolerance &&
+                             abs(cropRect.size.height - CGFloat(videoAsset.pixelHeight)) < tolerance
+            
+            // If no cropping and no duration trimming needed, return original video
+            if isFullFrame && duration == nil {
+                let videosOptions = PHVideoRequestOptions()
+                videosOptions.isNetworkAccessAllowed = true
+                videosOptions.deliveryMode = .highQualityFormat
+                imageManager?.requestAVAsset(forVideo: videoAsset, options: videosOptions) { asset, _, _ in
+                    if let urlAsset = asset as? AVURLAsset {
+                        DispatchQueue.main.async {
+                            callback(urlAsset.url)
+                        }
+                    } else {
+                        // Fall back to processing if we can't get direct URL
+                        self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
+                    }
+                }
+                return
+            }
+        }
+        
+        // Proceed with normal processing
+        processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
+    }
+    
+    private func processVideoWithCropping(videoAsset: PHAsset,
+                                         cropRect: CGRect,
+                                         duration: CMTime?,
+                                         callback: @escaping (_ videoURL: URL?) -> Void) {
         let videosOptions = PHVideoRequestOptions()
         videosOptions.isNetworkAccessAllowed = true
         videosOptions.deliveryMode = .highQualityFormat
