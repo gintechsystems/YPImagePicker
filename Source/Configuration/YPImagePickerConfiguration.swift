@@ -290,6 +290,12 @@ public struct YPConfigVideo {
     /// so, the trimmer step becomes optional.
     /// - SeeAlso: [trimmerMaxDuration](x-source-tag://trimmerMaxDuration)
     public var automaticTrimToTrimmerMaxDuration: Bool = false
+    
+    /// Hides the thumbnail selection functionality while keeping the video trimming.
+    /// When set to true, users can trim videos but cannot select a custom thumbnail.
+    /// The thumbnail will be automatically generated from the first frame of the trimmed video.
+    /// Defaults to false.
+    public var hideThumbnailSelection: Bool = false
 }
 
 /// Encapsulates gallery specific settings.

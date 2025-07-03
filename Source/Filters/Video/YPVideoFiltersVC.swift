@@ -98,15 +98,23 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         // Set initial video cover
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
         imageGenerator?.appliesPreferredTrackTransform = true
-        didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
+        
+        if YPConfig.video.hideThumbnailSelection {
+            // Generate initial thumbnail from first frame when thumbnail selection is hidden
+            didChangeThumbPosition(CMTime.zero)
+        } else {
+            didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
+        }
     }
 
     override public func viewDidAppear(_ animated: Bool) {
         trimmerView.asset = inputAsset
         trimmerView.delegate = self
         
-        coverThumbSelectorView.asset = inputAsset
-        coverThumbSelectorView.delegate = self
+        if !YPConfig.video.hideThumbnailSelection {
+            coverThumbSelectorView.asset = inputAsset
+            coverThumbSelectorView.delegate = self
+        }
         
         selectTrim()
         videoView.loadVideo(inputVideo)
@@ -147,40 +155,100 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
 
     private func setupLayout() {
-        view.subviews(
-            trimBottomItem,
-            coverBottomItem,
-            videoView,
-            coverImageView,
-            trimmerContainerView.subviews(
-                trimmerView,
-                coverThumbSelectorView
+        if YPConfig.video.hideThumbnailSelection {
+            // Layout without cover bottom item when thumbnail selection is hidden
+            view.subviews(
+                trimBottomItem,
+                videoView,
+                coverImageView,
+                trimmerContainerView.subviews(
+                    trimmerView
+                )
             )
-        )
 
-        trimBottomItem.leading(0).height(40)
-        trimBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
-        trimBottomItem.Trailing == coverBottomItem.Leading
-        coverBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
-        coverBottomItem.trailing(0)
-        equal(sizes: trimBottomItem, coverBottomItem)
+            trimBottomItem.leading(0).trailing(0).height(40)
+            trimBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
 
-        videoView.heightEqualsWidth().fillHorizontally().top(0)
-        videoView.Bottom == trimmerContainerView.Top
+            videoView.heightEqualsWidth().fillHorizontally().top(0)
+            videoView.Bottom == trimmerContainerView.Top
 
-        coverImageView.followEdges(videoView)
+            coverImageView.followEdges(videoView)
 
-        trimmerContainerView.fillHorizontally()
-        trimmerContainerView.Top == videoView.Bottom
-        trimmerContainerView.Bottom == trimBottomItem.Top
+            trimmerContainerView.fillHorizontally()
+            trimmerContainerView.Top == videoView.Bottom
+            trimmerContainerView.Bottom == trimBottomItem.Top
 
-        trimmerView.fillHorizontally(padding: 30).centerVertically()
-        trimmerView.Height == trimmerContainerView.Height / 3
+            trimmerView.fillHorizontally(padding: 30).centerVertically()
+            trimmerView.Height == trimmerContainerView.Height / 3
+            
+            // Hide cover-related UI elements
+            coverBottomItem.isHidden = true
+            coverThumbSelectorView.isHidden = true
+        } else {
+            // Original layout with both trim and cover options
+            view.subviews(
+                trimBottomItem,
+                coverBottomItem,
+                videoView,
+                coverImageView,
+                trimmerContainerView.subviews(
+                    trimmerView,
+                    coverThumbSelectorView
+                )
+            )
 
-        coverThumbSelectorView.followEdges(trimmerView)
+            trimBottomItem.leading(0).height(40)
+            trimBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
+            trimBottomItem.Trailing == coverBottomItem.Leading
+            coverBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
+            coverBottomItem.trailing(0)
+            equal(sizes: trimBottomItem, coverBottomItem)
+
+            videoView.heightEqualsWidth().fillHorizontally().top(0)
+            videoView.Bottom == trimmerContainerView.Top
+
+            coverImageView.followEdges(videoView)
+
+            trimmerContainerView.fillHorizontally()
+            trimmerContainerView.Top == videoView.Bottom
+            trimmerContainerView.Bottom == trimBottomItem.Top
+
+            trimmerView.fillHorizontally(padding: 30).centerVertically()
+            trimmerView.Height == trimmerContainerView.Height / 3
+
+            coverThumbSelectorView.followEdges(trimmerView)
+        }
     }
 
     // MARK: - Actions
+    
+    private func returnOriginalVideo() {
+        DispatchQueue.main.async { [weak self] in
+            var coverImage: UIImage?
+            
+            if YPConfig.video.hideThumbnailSelection {
+                // Generate thumbnail from the first frame of the original video
+                if let imageGenerator = self?.imageGenerator,
+                   let imageRef = try? imageGenerator.copyCGImage(at: CMTime.zero, actualTime: nil) {
+                    coverImage = UIImage(cgImage: imageRef)
+                }
+            } else {
+                // Use the selected cover image
+                coverImage = self?.coverImageView.image
+            }
+            
+            if let finalCoverImage = coverImage {
+                let resultVideo = YPMediaVideo(thumbnail: finalCoverImage,
+                                               videoURL: self?.inputVideo.url ?? URL(fileURLWithPath: ""),
+                                               asset: self?.inputVideo.asset)
+                self?.didSave?(YPMediaItem.video(v: resultVideo))
+                self?.setupRightBarButtonItem()
+            } else {
+                ypLog("Don't have coverImage.")
+                self?.setupRightBarButtonItem()
+            }
+        }
+    }
 
     @objc private func save() {
         guard let didSave = didSave else {
@@ -189,11 +257,33 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
         navigationItem.rightBarButtonItem = YPLoaders.defaultLoader
 
+        // If video trimmer is disabled, always return original video
+        if !YPConfig.showsVideoTrimmer {
+            returnOriginalVideo()
+            return
+        }
+        
+        let startTime = trimmerView.startTime ?? CMTime.zero
+        let endTime = trimmerView.endTime ?? inputAsset.duration
+        
+        // Check if actual trimming is needed
+        let tolerance = CMTime(seconds: 0.1, preferredTimescale: 1000) // 0.1 second tolerance
+        let isStartAtBeginning = CMTimeCompare(startTime, CMTime.zero) == 0 || 
+                                CMTimeCompare(CMTimeAbsoluteValue(CMTimeSubtract(startTime, CMTime.zero)), tolerance) <= 0
+        let isEndAtOriginalEnd = CMTimeCompare(endTime, inputAsset.duration) == 0 ||
+                                CMTimeCompare(CMTimeAbsoluteValue(CMTimeSubtract(endTime, inputAsset.duration)), tolerance) <= 0
+        
+        if isStartAtBeginning && isEndAtOriginalEnd {
+            // Video trimmer is enabled but user didn't trim - return original video
+            returnOriginalVideo()
+            return
+        }
+
+        // Actual trimming is needed - proceed with export
         do {
             let asset = AVURLAsset(url: inputVideo.url)
             let trimmedAsset = try asset
-                .assetByTrimming(startTime: trimmerView.startTime ?? CMTime.zero,
-                                 endTime: trimmerView.endTime ?? inputAsset.duration)
+                .assetByTrimming(startTime: startTime, endTime: endTime)
             
             // Looks like file:///private/var/mobile/Containers/Data/Application
             // /FAD486B4-784D-4397-B00C-AD0EFFB45F52/tmp/8A2B410A-BD34-4E3F-8CB5-A548A946C1F1.mov
@@ -204,24 +294,48 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                 switch session.status {
                 case .completed:
                     DispatchQueue.main.async {
-                        if let coverImage = self?.coverImageView.image {
-                            let resultVideo = YPMediaVideo(thumbnail: coverImage,
+                        var coverImage: UIImage?
+                        
+                        if YPConfig.video.hideThumbnailSelection {
+                            // Generate thumbnail from the first frame of the trimmed video
+                            let startTime = self?.trimmerView.startTime ?? CMTime.zero
+                            if let imageGenerator = self?.imageGenerator,
+                               let imageRef = try? imageGenerator.copyCGImage(at: startTime, actualTime: nil) {
+                                coverImage = UIImage(cgImage: imageRef)
+                            }
+                        } else {
+                            // Use the selected cover image
+                            coverImage = self?.coverImageView.image
+                        }
+                        
+                        if let finalCoverImage = coverImage {
+                            let resultVideo = YPMediaVideo(thumbnail: finalCoverImage,
                                                            videoURL: destinationURL,
                                                            asset: self?.inputVideo.asset)
                             didSave(YPMediaItem.video(v: resultVideo))
                             self?.setupRightBarButtonItem()
                         } else {
                             ypLog("Don't have coverImage.")
+                            self?.setupRightBarButtonItem()
                         }
                     }
                 case .failed:
-                    ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
+                    DispatchQueue.main.async { [weak self] in
+                        ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
+                        self?.setupRightBarButtonItem()
+                    }
                 default:
-                    ypLog("Export session completed with \(session.status) status. Not handled")
+                    DispatchQueue.main.async { [weak self] in
+                        ypLog("Export session completed with \(session.status) status. Not handled")
+                        self?.setupRightBarButtonItem()
+                    }
                 }
             }
         } catch let error {
-            ypLog("Error: \(error)")
+            DispatchQueue.main.async { [weak self] in
+                ypLog("Error: \(error)")
+                self?.setupRightBarButtonItem()
+            }
         }
     }
     
@@ -244,6 +358,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
     
     @objc private func selectCover() {
+        // Only allow cover selection if thumbnail selection is not hidden
+        guard !YPConfig.video.hideThumbnailSelection else { return }
+        
         title = YPConfig.wordings.cover
         
         trimBottomItem.deselect()
