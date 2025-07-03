@@ -104,19 +104,44 @@ class LibraryMediaManager {
                              abs(cropRect.size.width - CGFloat(videoAsset.pixelWidth)) < tolerance &&
                              abs(cropRect.size.height - CGFloat(videoAsset.pixelHeight)) < tolerance
             
-            // If no cropping and no duration trimming needed, return original video
+            // If no cropping and no duration trimming needed, try to get video URL efficiently
             if isFullFrame && duration == nil {
                 let videosOptions = PHVideoRequestOptions()
                 videosOptions.isNetworkAccessAllowed = true
                 videosOptions.deliveryMode = .highQualityFormat
-                imageManager?.requestAVAsset(forVideo: videoAsset, options: videosOptions) { asset, _, _ in
-                    if let urlAsset = asset as? AVURLAsset {
-                        DispatchQueue.main.async {
-                            callback(urlAsset.url)
-                        }
-                    } else {
-                        // Fall back to processing if we can't get direct URL
+                videosOptions.version = .original // Ensure we get the original version
+                
+                // Use requestExportSession instead of requestAVAsset for better URL handling
+                PHImageManager.default().requestExportSession(forVideo: videoAsset, 
+                                                            options: videosOptions, 
+                                                            exportPreset: AVAssetExportPresetPassthrough) { exportSession, _ in
+                    guard let exportSession = exportSession else {
+                        // Fall back to processing if we can't get export session
                         self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
+                        return
+                    }
+                    
+                    // Export to a temporary file to ensure we have a stable URL
+                    let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
+                        .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
+                    
+                    exportSession.outputURL = fileURL
+                    exportSession.outputFileType = YPConfig.video.fileType
+                    exportSession.shouldOptimizeForNetworkUse = true
+                    
+                    exportSession.exportAsynchronously {
+                        DispatchQueue.main.async {
+                            switch exportSession.status {
+                            case .completed:
+                                callback(fileURL)
+                            case .failed, .cancelled:
+                                // Fall back to processing if export fails
+                                self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
+                            default:
+                                // Fall back to processing for other statuses
+                                self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
+                            }
+                        }
                     }
                 }
                 return
