@@ -96,59 +96,9 @@ class LibraryMediaManager {
                                           duration: CMTime?,
                                           callback: @escaping (_ videoURL: URL?) -> Void) {
         
-        // Check if cropping is actually needed (within 1% tolerance) and skip processing is enabled
-        if YPConfig.video.skipProcessingWhenPossible {
-            let tolerance: CGFloat = 0.01
-            let isFullFrame = abs(cropRect.origin.x) < tolerance && 
-                             abs(cropRect.origin.y) < tolerance &&
-                             abs(cropRect.size.width - CGFloat(videoAsset.pixelWidth)) < tolerance &&
-                             abs(cropRect.size.height - CGFloat(videoAsset.pixelHeight)) < tolerance
-            
-            // If no cropping and no duration trimming needed, try to get video URL efficiently
-            if isFullFrame && duration == nil {
-                let videosOptions = PHVideoRequestOptions()
-                videosOptions.isNetworkAccessAllowed = true
-                videosOptions.deliveryMode = .highQualityFormat
-                videosOptions.version = .original // Ensure we get the original version
-                
-                // Use requestExportSession instead of requestAVAsset for better URL handling
-                PHImageManager.default().requestExportSession(forVideo: videoAsset, 
-                                                            options: videosOptions, 
-                                                            exportPreset: AVAssetExportPresetPassthrough) { exportSession, _ in
-                    guard let exportSession = exportSession else {
-                        // Fall back to processing if we can't get export session
-                        self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
-                        return
-                    }
-                    
-                    // Export to a temporary file to ensure we have a stable URL
-                    let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
-                        .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
-                    
-                    exportSession.outputURL = fileURL
-                    exportSession.outputFileType = YPConfig.video.fileType
-                    exportSession.shouldOptimizeForNetworkUse = true
-                    
-                    exportSession.exportAsynchronously {
-                        DispatchQueue.main.async {
-                            switch exportSession.status {
-                            case .completed:
-                                callback(fileURL)
-                            case .failed, .cancelled:
-                                // Fall back to processing if export fails
-                                self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
-                            default:
-                                // Fall back to processing for other statuses
-                                self.processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
-                            }
-                        }
-                    }
-                }
-                return
-            }
-        }
-        
-        // Proceed with normal processing
+        // Always process through the standard pipeline for reliability
+        // The skipProcessingWhenPossible optimization can cause URL handling issues
+        // so we'll optimize within the processing instead
         processVideoWithCropping(videoAsset: videoAsset, cropRect: cropRect, duration: duration, callback: callback)
     }
     
@@ -186,28 +136,40 @@ class LibraryMediaManager {
                 
                 try videoCompositionTrack.insertTimeRange(trackTimeRange, of: videoTrack, at: CMTime.zero)
                 
-                // Layer Instructions
-                let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
-                var transform = videoTrack.preferredTransform
-                let videoSize = videoTrack.naturalSize.applying(transform)
-                transform.tx = (videoSize.width < 0) ? abs(videoSize.width) : 0.0
-                transform.ty = (videoSize.height < 0) ? abs(videoSize.height) : 0.0
-                transform.tx -= cropRect.minX
-                transform.ty -= cropRect.minY
-                layerInstructions.setTransform(transform, at: CMTime.zero)
-                videoCompositionTrack.preferredTransform = transform
+                // 2. Check if minimal cropping is needed for optimization
+                let tolerance: CGFloat = 0.01
+                let isMinimalCrop = abs(cropRect.origin.x) < tolerance && 
+                                   abs(cropRect.origin.y) < tolerance &&
+                                   abs(cropRect.size.width - CGFloat(videoAsset.pixelWidth)) < tolerance &&
+                                   abs(cropRect.size.height - CGFloat(videoAsset.pixelHeight)) < tolerance
                 
-                // CompositionInstruction
-                let mainInstructions = AVMutableVideoCompositionInstruction()
-                mainInstructions.timeRange = trackTimeRange
-                mainInstructions.layerInstructions = [layerInstructions]
+                var videoComposition: AVMutableVideoComposition?
                 
-                // Video Composition
-                let videoComposition = AVMutableVideoComposition(propertiesOf: asset)
-                videoComposition.instructions = [mainInstructions]
-                videoComposition.renderSize = cropRect.size // needed?
+                // Only apply video composition if significant cropping/transformation is needed
+                if !isMinimalCrop {
+                    // Layer Instructions
+                    let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
+                    var transform = videoTrack.preferredTransform
+                    let videoSize = videoTrack.naturalSize.applying(transform)
+                    transform.tx = (videoSize.width < 0) ? abs(videoSize.width) : 0.0
+                    transform.ty = (videoSize.height < 0) ? abs(videoSize.height) : 0.0
+                    transform.tx -= cropRect.minX
+                    transform.ty -= cropRect.minY
+                    layerInstructions.setTransform(transform, at: CMTime.zero)
+                    videoCompositionTrack.preferredTransform = transform
+                    
+                    // CompositionInstruction
+                    let mainInstructions = AVMutableVideoCompositionInstruction()
+                    mainInstructions.timeRange = trackTimeRange
+                    mainInstructions.layerInstructions = [layerInstructions]
+                    
+                    // Video Composition
+                    videoComposition = AVMutableVideoComposition(propertiesOf: asset)
+                    videoComposition?.instructions = [mainInstructions]
+                    videoComposition?.renderSize = cropRect.size
+                }
                 
-                // 5. Configuring export session
+                // 3. Configuring export session
                 
                 let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
@@ -237,7 +199,7 @@ class LibraryMediaManager {
                         }
                     }
 
-                // 6. Exporting
+                // 4. Exporting
                 DispatchQueue.main.async {
                     self.exportTimer = Timer.scheduledTimer(timeInterval: 0.1,
                                                             target: self,
