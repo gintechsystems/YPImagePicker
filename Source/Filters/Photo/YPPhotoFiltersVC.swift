@@ -35,6 +35,7 @@ open class YPPhotoFiltersVC: UIViewController, IsMediaFilterVC, UIGestureRecogni
     fileprivate var filteredThumbnailImagesArray: [UIImage] = []
     fileprivate var thumbnailImageForFiltering: CIImage? // Small image for creating filters thumbnails
     fileprivate var currentlySelectedImageThumbnail: UIImage? // Used for comparing with original image when tapped
+    fileprivate var fullSizeImageForFiltering: CIImage? // Full size image for main display
 
     fileprivate var v = YPFiltersView()
 
@@ -50,6 +51,7 @@ open class YPPhotoFiltersVC: UIViewController, IsMediaFilterVC, UIGestureRecogni
         // Setup of main image an thumbnail images
         v.imageView.image = inputPhoto.image
         thumbnailImageForFiltering = thumbFromImage(inputPhoto.image)
+        fullSizeImageForFiltering = inputPhoto.image.toCIImage()
         DispatchQueue.global().async {
             self.filteredThumbnailImagesArray = self.filters.map { filter -> UIImage in
                 if let applier = filter.applier,
@@ -119,7 +121,15 @@ open class YPPhotoFiltersVC: UIViewController, IsMediaFilterVC, UIGestureRecogni
         case .began:
             v.imageView.image = inputPhoto.originalImage
         case .ended:
-            v.imageView.image = currentlySelectedImageThumbnail ?? inputPhoto.originalImage
+            // Show filtered full-size image or original if no filter selected
+            if let filter = selectedFilter,
+               let applier = filter.applier,
+               let fullSizeImage = fullSizeImageForFiltering,
+               let filteredFullSizeImage = applier(fullSizeImage) {
+                v.imageView.image = filteredFullSizeImage.toUIImage()
+            } else {
+                v.imageView.image = inputPhoto.originalImage
+            }
         default: ()
         }
     }
@@ -130,7 +140,7 @@ open class YPPhotoFiltersVC: UIViewController, IsMediaFilterVC, UIGestureRecogni
         let thumbnailHeight: CGFloat = 300 * scale
         let thumbnailWidth = thumbnailHeight * k
         let thumbnailSize = CGSize(width: thumbnailWidth, height: thumbnailHeight)
-        UIGraphicsBeginImageContext(thumbnailSize)
+        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, scale)
         img.draw(in: CGRect(x: 0, y: 0, width: thumbnailSize.width, height: thumbnailSize.height))
         let smallImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -193,6 +203,16 @@ extension YPPhotoFiltersVC: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedFilter = filters[indexPath.row]
         currentlySelectedImageThumbnail = filteredThumbnailImagesArray[indexPath.row]
-        self.v.imageView.image = currentlySelectedImageThumbnail
+        
+        // Apply filter to full-size image for better quality preview
+        if let filter = selectedFilter,
+           let applier = filter.applier,
+           let fullSizeImage = fullSizeImageForFiltering,
+           let filteredFullSizeImage = applier(fullSizeImage) {
+            self.v.imageView.image = filteredFullSizeImage.toUIImage()
+        } else {
+            // No filter selected (Normal filter)
+            self.v.imageView.image = inputPhoto.originalImage
+        }
     }
 }

@@ -15,14 +15,22 @@ internal extension CIImage {
 			But ot produce a bug with wrong filling in the simulator.
 			return UIImage(ciImage: self)
          */
-        let context: CIContext = CIContext.init(options: nil)
+        let contextOptions: [CIContextOption: Any] = [
+            .workingColorSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
+            .useSoftwareRenderer: false
+        ]
+        let context: CIContext = CIContext(options: contextOptions)
         let cgImage: CGImage = context.createCGImage(self, from: self.extent)!
         let image: UIImage = UIImage(cgImage: cgImage)
         return image
     }
     
     func toCGImage() -> CGImage? {
-        let context = CIContext(options: nil)
+        let contextOptions: [CIContextOption: Any] = [
+            .workingColorSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
+            .useSoftwareRenderer: false
+        ]
+        let context = CIContext(options: contextOptions)
         if let cgImage = context.createCGImage(self, from: self.extent) {
             return cgImage
         }

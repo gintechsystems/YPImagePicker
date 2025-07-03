@@ -22,12 +22,18 @@ public struct YPImagePickerConfiguration {
     public static var screenWidth: CGFloat {
         var screenWidth: CGFloat = 0
         
-        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-            screenWidth = windowScene?.screen.bounds.width ?? 1.0
-		if UIDevice.current.userInterfaceIdiom == .pad && YPImagePickerConfiguration.widthOniPad > 0 {
-			screenWidth =  YPImagePickerConfiguration.widthOniPad
-		}
-		return screenWidth
+        if Thread.isMainThread {
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            screenWidth = windowScene?.screen.bounds.width ?? UIScreen.main.bounds.width
+        } else {
+            // Fallback to UIScreen.main when not on main thread
+            screenWidth = UIScreen.main.bounds.width
+        }
+        
+        if UIDevice.current.userInterfaceIdiom == .pad && YPImagePickerConfiguration.widthOniPad > 0 {
+            screenWidth = YPImagePickerConfiguration.widthOniPad
+        }
+        return screenWidth
     }
 
     /// If don't want to have logs from picker, set it to false.
@@ -133,6 +139,19 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Toaster", applier: YPFilter.toasterFilter),
         YPFilter(name: "1977", applier: YPFilter.apply1977Filter),
         YPFilter(name: "Clarendon", applier: YPFilter.clarendonFilter),
+        YPFilter(name: "Vintage", applier: YPFilter.vintageFilter),
+        YPFilter(name: "Dramatic", applier: YPFilter.dramaticFilter),
+        YPFilter(name: "Warm", applier: YPFilter.warmFilter),
+        YPFilter(name: "Cool", applier: YPFilter.coolFilter),
+        YPFilter(name: "Vibrant", applier: YPFilter.vibrantFilter),
+        YPFilter(name: "Dreamy", applier: YPFilter.dreamyFilter),
+        YPFilter(name: "Sunset", applier: YPFilter.sunsetFilter),
+        YPFilter(name: "Glow", applier: YPFilter.glowFilter),
+        YPFilter(name: "Polaroid", applier: YPFilter.polaroidFilter),
+        YPFilter(name: "Neon", applier: YPFilter.neonFilter),
+        YPFilter(name: "Film", applier: YPFilter.filmFilter),
+        YPFilter(name: "Retro", applier: YPFilter.retroFilter),
+        YPFilter(name: "Minimal", applier: YPFilter.minimalFilter),
         YPFilter(name: "Chrome", coreImageFilterName: "CIPhotoEffectChrome"),
         YPFilter(name: "Fade", coreImageFilterName: "CIPhotoEffectFade"),
         YPFilter(name: "Instant", coreImageFilterName: "CIPhotoEffectInstant"),
@@ -145,7 +164,7 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Linear", coreImageFilterName: "CISRGBToneCurveToLinear"),
         YPFilter(name: "Sepia", coreImageFilterName: "CISepiaTone"),
         YPFilter(name: "XRay", coreImageFilterName: "CIXRay")
-        ]
+    ]
 }
 
 /// Encapsulates library specific settings.

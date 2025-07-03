@@ -40,8 +40,13 @@ class LibraryMediaManager {
     
     func updateCachedAssets(in collectionView: UICollectionView) {
         let screenWidth = YPImagePickerConfiguration.screenWidth
-        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        let scale = windowScene?.screen.scale ?? 1.0
+        let scale: CGFloat
+        if Thread.isMainThread {
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            scale = windowScene?.screen.scale ?? UIScreen.main.scale
+        } else {
+            scale = UIScreen.main.scale
+        }
         let size = screenWidth / 4 * scale
         let cellSize = CGSize(width: size, height: size)
         
