@@ -136,40 +136,28 @@ class LibraryMediaManager {
                 
                 try videoCompositionTrack.insertTimeRange(trackTimeRange, of: videoTrack, at: CMTime.zero)
                 
-                // 2. Check if minimal cropping is needed for optimization
-                let tolerance: CGFloat = 0.01
-                let isMinimalCrop = abs(cropRect.origin.x) < tolerance && 
-                                   abs(cropRect.origin.y) < tolerance &&
-                                   abs(cropRect.size.width - CGFloat(videoAsset.pixelWidth)) < tolerance &&
-                                   abs(cropRect.size.height - CGFloat(videoAsset.pixelHeight)) < tolerance
+                // Layer Instructions
+                let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
+                var transform = videoTrack.preferredTransform
+                let videoSize = videoTrack.naturalSize.applying(transform)
+                transform.tx = (videoSize.width < 0) ? abs(videoSize.width) : 0.0
+                transform.ty = (videoSize.height < 0) ? abs(videoSize.height) : 0.0
+                transform.tx -= cropRect.minX
+                transform.ty -= cropRect.minY
+                layerInstructions.setTransform(transform, at: CMTime.zero)
+                videoCompositionTrack.preferredTransform = transform
                 
-                var videoComposition: AVMutableVideoComposition?
+                // CompositionInstruction
+                let mainInstructions = AVMutableVideoCompositionInstruction()
+                mainInstructions.timeRange = trackTimeRange
+                mainInstructions.layerInstructions = [layerInstructions]
                 
-                // Only apply video composition if significant cropping/transformation is needed
-                if !isMinimalCrop {
-                    // Layer Instructions
-                    let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
-                    var transform = videoTrack.preferredTransform
-                    let videoSize = videoTrack.naturalSize.applying(transform)
-                    transform.tx = (videoSize.width < 0) ? abs(videoSize.width) : 0.0
-                    transform.ty = (videoSize.height < 0) ? abs(videoSize.height) : 0.0
-                    transform.tx -= cropRect.minX
-                    transform.ty -= cropRect.minY
-                    layerInstructions.setTransform(transform, at: CMTime.zero)
-                    videoCompositionTrack.preferredTransform = transform
-                    
-                    // CompositionInstruction
-                    let mainInstructions = AVMutableVideoCompositionInstruction()
-                    mainInstructions.timeRange = trackTimeRange
-                    mainInstructions.layerInstructions = [layerInstructions]
-                    
-                    // Video Composition
-                    videoComposition = AVMutableVideoComposition(propertiesOf: asset)
-                    videoComposition?.instructions = [mainInstructions]
-                    videoComposition?.renderSize = cropRect.size
-                }
+                // Video Composition
+                let videoComposition = AVMutableVideoComposition(propertiesOf: asset)
+                videoComposition.instructions = [mainInstructions]
+                videoComposition.renderSize = cropRect.size // needed?
                 
-                // 3. Configuring export session
+                // 5. Configuring export session
                 
                 let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
@@ -199,7 +187,7 @@ class LibraryMediaManager {
                         }
                     }
 
-                // 4. Exporting
+                // 6. Exporting
                 DispatchQueue.main.async {
                     self.exportTimer = Timer.scheduledTimer(timeInterval: 0.1,
                                                             target: self,
