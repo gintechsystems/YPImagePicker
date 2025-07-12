@@ -15,9 +15,12 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
     }
     
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        guard let fetchResult = self.mediaManager.fetchResult,
-              let collectionChanges = changeInstance.changeDetails(for: fetchResult) else {
+        guard let fetchResult = self.mediaManager.fetchResult, let collectionChanges = changeInstance.changeDetails(for: fetchResult) else {
             ypLog("Some problems there.")
+            
+            DispatchQueue.main.async {
+                self.v.updateSelectMoreBarVisibility()
+            }
             return
         }
 
@@ -37,10 +40,10 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
                         collectionView.insertItems(at: insertedIndexes.aapl_indexPathsFromIndexesWithSection(0))
                     }
                 }, completion: { finished in
-                    guard finished,
-                          let changedIndexes = collectionChanges.changedIndexes,
-                          changedIndexes.count != 0 else {
+                    guard finished, let changedIndexes = collectionChanges.changedIndexes, changedIndexes.count != 0 else {
                         ypLog("Some problems there.")
+                        
+                        self.v.updateSelectMoreBarVisibility()
                         return
                     }
 
@@ -50,6 +53,8 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
 
             self.updateAssetSelection()
             self.mediaManager.resetCachedAssets()
+            
+            self.v.updateSelectMoreBarVisibility()
         }
     }
 

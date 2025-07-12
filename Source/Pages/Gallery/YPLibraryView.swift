@@ -9,6 +9,7 @@
 import UIKit
 import Stevia
 import Photos
+import PhotosUI
 
 internal final class YPLibraryView: UIView {
 
@@ -46,6 +47,41 @@ internal final class YPLibraryView: UIView {
     internal let maxNumberWarningLabel: UILabel = {
         let v = UILabel()
         v.font = YPConfig.fonts.libaryWarningFont
+        return v
+    }()
+    
+    /// Select more bar that appears when photo library authorization is limited
+    internal let selectMoreBar: UIView = {
+        let v = UIView()
+        v.backgroundColor = YPConfig.colors.libraryScreenBackgroundColor
+        v.isHidden = true
+        return v
+    }()
+    
+    internal let selectMoreStackView: UIStackView = {
+        let v = UIStackView()
+        v.axis = .horizontal
+        v.alignment = .center
+        v.distribution = .fill
+        v.spacing = 8
+        return v
+    }()
+    
+    internal let selectMoreIcon: UIImageView = {
+        let v = UIImageView()
+        if #available(iOS 13.0, *) {
+            v.image = UIImage(systemName: "photo.on.rectangle.angled")
+        }
+        v.tintColor = YPConfig.colors.tintColor
+        v.contentMode = .scaleAspectFit
+        return v
+    }()
+    
+    internal let selectMoreLabel: UILabel = {
+        let v = UILabel()
+        v.text = "Select more..."
+        v.font = YPConfig.fonts.libaryWarningFont
+        v.textColor = YPConfig.colors.tintColor
         return v
     }()
 
@@ -87,6 +123,7 @@ internal final class YPLibraryView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        setupSelectMoreBar()
         setupLayout()
         clipsToBounds = true
     }
@@ -157,8 +194,37 @@ internal final class YPLibraryView: UIView {
         let size = screenWidth / 4 * scale
         return CGSize(width: size, height: size)
     }
+    
+    // MARK: - Select More Bar
+    
+    func updateSelectMoreBarVisibility() {
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        let shouldShow = status == .limited
+        
+        UIView.animate(withDuration: 0.3) {
+            self.selectMoreBar.isHidden = !shouldShow
+            self.selectMoreBar.heightConstraint?.constant = (!shouldShow ? 0.0 : 40.0)
+            self.layoutIfNeeded()
+        }
+    }
 
     // MARK: - Private Methods
+    
+    private func setupSelectMoreBar() {
+        selectMoreStackView.addArrangedSubview(selectMoreIcon)
+        selectMoreStackView.addArrangedSubview(selectMoreLabel)
+        
+        // Add tap gesture to the select more bar
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectMoreBarTapped))
+        selectMoreBar.addGestureRecognizer(tapGesture)
+        selectMoreBar.isUserInteractionEnabled = true
+    }
+    
+    @objc private func selectMoreBarTapped() {
+        if let viewController = self.findViewController() {
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: viewController)
+        }
+    }
 
     private func setupLayout() {
         subviews(
@@ -166,6 +232,9 @@ internal final class YPLibraryView: UIView {
                 collectionView
             ),
             line,
+            selectMoreBar.subviews(
+                selectMoreStackView
+            ),
             assetViewContainer.subviews(
                 assetZoomableView
             ),
@@ -182,10 +251,15 @@ internal final class YPLibraryView: UIView {
         line.height(1)
         line.fillHorizontally()
 
+        selectMoreBar.fillHorizontally().height(0)
+        selectMoreBar.Top == line.Bottom
+        selectMoreStackView.centerInContainer()
+        selectMoreIcon.width(20).height(20)
+
         assetViewContainer.top(0).fillHorizontally().heightEqualsWidth()
         self.assetViewContainerConstraintTop = assetViewContainer.topConstraint
         assetZoomableView.fillContainer().heightEqualsWidth()
-        assetZoomableView.Bottom == collectionView.Top
+        collectionView.Top == selectMoreBar.Bottom
         assetViewContainer.sendSubviewToBack(assetZoomableView)
 
         progressView.height(5).fillHorizontally()
@@ -194,5 +268,18 @@ internal final class YPLibraryView: UIView {
         |maxNumberWarningView|.bottom(0)
         maxNumberWarningView.Top == safeAreaLayoutGuide.Bottom - 40
         maxNumberWarningLabel.centerHorizontally().top(11)
+    }
+}
+
+// MARK: - UIView Extension
+extension UIView {
+    func findViewController() -> UIViewController? {
+        if let nextResponder = self.next as? UIViewController {
+            return nextResponder
+        } else if let nextResponder = self.next as? UIView {
+            return nextResponder.findViewController()
+        } else {
+            return nil
+        }
     }
 }

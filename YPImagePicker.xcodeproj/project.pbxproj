@@ -57,6 +57,7 @@
 		AA69BCF222E601D100FBB925 /* YPDeviceOrientationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */; };
 		BB51684B2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
 		BB51684C2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
+		BBA850032E224AB000FE8FD4 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA850022E224AB000FE8FD4 /* PhotosUI.framework */; };
 		BBDFA743274B7EA9009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		BBDFA744274B7EAB009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		EB05F6E7214A7191002040AA /* YPVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB05F6E6214A7191002040AA /* YPVideoProcessor.swift */; };
@@ -284,6 +285,7 @@
 		A7FD716620755C2D0044A8E8 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPDeviceOrientationHelper.swift; sourceTree = "<group>"; };
 		BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Extensions.swift"; sourceTree = "<group>"; };
+		BBA850022E224AB000FE8FD4 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YPAccessibility.swift; sourceTree = "<group>"; };
 		DC3DAC4526C6FCAA007FD95A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		E3E492BB2169012B002BA807 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 			files = (
 				EBA37BCD26F75BCC005DAAD4 /* Stevia in Frameworks */,
 				EBA37BD026F75C67005DAAD4 /* PryntTrimmerView in Frameworks */,
+				BBA850032E224AB000FE8FD4 /* PhotosUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +367,7 @@
 		0189A01124997FA6B71D325B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BBA850022E224AB000FE8FD4 /* PhotosUI.framework */,
 				61DAE15125B4DA4E55DDE0B8 /* Pods_Example.framework */,
 			);
 			name = Frameworks;

@@ -113,6 +113,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
 
             strongSelf.updateCropInfo()
         }
+        
+        // Update select more bar visibility based on authorization status
+        v.updateSelectMoreBarVisibility()
     }
     
     public override func viewDidAppear(_ animated: Bool) {
