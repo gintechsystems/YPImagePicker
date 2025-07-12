@@ -58,6 +58,8 @@
 		BB51684B2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
 		BB51684C2E108DE500B09914 /* UIWindow+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */; };
 		BBA850032E224AB000FE8FD4 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA850022E224AB000FE8FD4 /* PhotosUI.framework */; };
+		BBA850052E22CED400FE8FD4 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA850042E22CECD00FE8FD4 /* UIView+Extensions.swift */; };
+		BBA850062E22CED400FE8FD4 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA850042E22CECD00FE8FD4 /* UIView+Extensions.swift */; };
 		BBDFA743274B7EA9009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		BBDFA744274B7EAB009CC303 /* YPAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */; };
 		EB05F6E7214A7191002040AA /* YPVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB05F6E6214A7191002040AA /* YPVideoProcessor.swift */; };
@@ -286,6 +288,7 @@
 		AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPDeviceOrientationHelper.swift; sourceTree = "<group>"; };
 		BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Extensions.swift"; sourceTree = "<group>"; };
 		BBA850022E224AB000FE8FD4 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
+		BBA850042E22CECD00FE8FD4 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		BBDFA742274B7EA9009CC303 /* YPAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YPAccessibility.swift; sourceTree = "<group>"; };
 		DC3DAC4526C6FCAA007FD95A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		E3E492BB2169012B002BA807 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
@@ -548,6 +551,7 @@
 				9911FA23203C3A31000E9B06 /* UIImage+Extensions.swift */,
 				321E6D86240CFABC00D76CD8 /* UINavigationBar+Extensions.swift */,
 				BB51684A2E108DE100B09914 /* UIWindow+Extensions.swift */,
+				BBA850042E22CECD00FE8FD4 /* UIView+Extensions.swift */,
 				EB473E16208E192800D16105 /* URL+Extensions.swift */,
 				EBA37BC826F757FF005DAAD4 /* Bundle+Extensions.swift */,
 				EBDDF0EA278784A900A372FD /* Array+Extensions.swift */,
@@ -880,6 +884,7 @@
 				EBA37BC226F74CE0005DAAD4 /* YPFilter.swift in Sources */,
 				EB584BFB207B870F00265B38 /* YPSelectionsGalleryVC.swift in Sources */,
 				99019E512018CDED007325C2 /* YPImageSize.swift in Sources */,
+				BBA850062E22CED400FE8FD4 /* UIView+Extensions.swift in Sources */,
 				99CF6D25201B727900487F77 /* YPLibraryVC+PanGesture.swift in Sources */,
 				99CF6D27201B739600487F77 /* YPAlerts.swift in Sources */,
 				99C6D6CF1F1FB5C100711DB2 /* YPPickerVC.swift in Sources */,
@@ -956,6 +961,7 @@
 				EBA37B8926F74CBA005DAAD4 /* YPAlerts.swift in Sources */,
 				EBA37B9526F74CBA005DAAD4 /* AVCaptureDevice+Extensions.swift in Sources */,
 				EBA37B9426F74CBA005DAAD4 /* YPAssetZoomableView.swift in Sources */,
+				BBA850052E22CED400FE8FD4 /* UIView+Extensions.swift in Sources */,
 				EBA37BA126F74CBA005DAAD4 /* AVAsset+Extensions.swift in Sources */,
 				EBA37B8626F74CBA005DAAD4 /* YPWordings.swift in Sources */,
 				EBA37BAC26F74CBA005DAAD4 /* YPHelper.swift in Sources */,

@@ -270,16 +270,3 @@ internal final class YPLibraryView: UIView {
         maxNumberWarningLabel.centerHorizontally().top(11)
     }
 }
-
-// MARK: - UIView Extension
-extension UIView {
-    func findViewController() -> UIViewController? {
-        if let nextResponder = self.next as? UIViewController {
-            return nextResponder
-        } else if let nextResponder = self.next as? UIView {
-            return nextResponder.findViewController()
-        } else {
-            return nil
-        }
-    }
-}
