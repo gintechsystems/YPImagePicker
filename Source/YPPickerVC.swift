@@ -166,6 +166,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         if let vc = vc as? YPLibraryVC {
             vc.doAfterLibraryPermissionCheck { [weak vc] in
                 vc?.initialize()
+                vc?.v.updateSelectMoreBarVisibility()
             }
         } else if let cameraVC = vc as? YPCameraVC {
             cameraVC.start()
