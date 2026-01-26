@@ -152,6 +152,10 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                                                             action: #selector(save))
         navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
         navigationItem.rightBarButtonItem?.setFont(font: YPConfig.fonts.rightBarButtonFont, forState: .normal)
+        
+        if #available(iOS 26.0, *) {
+            navigationItem.rightBarButtonItem?.hidesSharedBackground = true
+        }
     }
 
     private func setupLayout() {
